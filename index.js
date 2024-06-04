@@ -50,7 +50,7 @@ async function run() {
     app.post("/articles", async (req, res) => {
       const data = req.body
       const result = await articleCollection.insertOne(data);
-      res.send(result)
+      res.send(result);
     });
 
     app.get("/articles", async (req, res) => {
@@ -63,7 +63,7 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id)}
       const result = await articleCollection.findOne(query)
-      res.send(result)
+      res.send(result);
     });
 
     app.get("/premium_articles", async (req, res) => {
