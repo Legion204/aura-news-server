@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -34,15 +34,15 @@ async function run() {
     const userCollection = client.db("newsDB").collection("users");
 
     // user related api
-    app.post('/users',async (req,res)=>{
+    app.post('/users', async (req, res) => {
       const user = req.body
 
       // check if user is already in database
-      const query = {email: user.email}
-      const existingUser= await userCollection.findOne(query);
-      if(existingUser){
-        return res.send({message:'user already exists',insertedId:null})
-      };
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'user already exists', insertedId: null })
+      }
       const result = await userCollection.insertOne(user);
       res.send(result);
     })
@@ -51,7 +51,33 @@ async function run() {
       const data = req.body
       const result = await articleCollection.insertOne(data);
       res.send(result)
-    })
+    });
+
+    app.get("/articles", async (req, res) => {
+      const query = { status: "approved" , isPremium: false }
+      const result = await articleCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/article/:id",async(req,res)=>{
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)}
+      const result = await articleCollection.findOne(query)
+      res.send(result)
+    });
+
+    app.get("/premium_articles", async (req, res) => {
+      const query = { isPremium: true , status: "approved" }
+      const result = await articleCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/my_articles", async (req, res) => {
+      const email = req.query.email
+      const query = { authorEmail: email }
+      const result = await articleCollection.find(query).toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
