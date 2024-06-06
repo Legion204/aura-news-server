@@ -54,20 +54,20 @@ async function run() {
     });
 
     app.get("/articles", async (req, res) => {
-      const query = { status: "approved" , isPremium: false }
+      const query = { status: "approved", isPremium: false }
       const result = await articleCollection.find(query).toArray();
       res.send(result);
     });
 
-    app.get("/article/:id",async(req,res)=>{
+    app.get("/article/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await articleCollection.findOne(query)
       res.send(result);
     });
 
     app.get("/premium_articles", async (req, res) => {
-      const query = { isPremium: true , status: "approved" }
+      const query = { isPremium: true, status: "approved" }
       const result = await articleCollection.find(query).toArray();
       res.send(result);
     });
@@ -76,6 +76,13 @@ async function run() {
       const email = req.query.email
       const query = { authorEmail: email }
       const result = await articleCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.delete("/my_article/:id", async (req, res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await articleCollection.deleteOne(query)
       res.send(result);
     });
 
