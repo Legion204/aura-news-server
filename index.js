@@ -86,7 +86,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/update_article/:id", async (req, res) => {
+    app.put("/update_article/:id", async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const options = { upsert: true }
