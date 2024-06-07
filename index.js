@@ -81,7 +81,7 @@ async function run() {
 
     app.delete("/my_article/:id", async (req, res) => {
       const id = req.params.id
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await articleCollection.deleteOne(query)
       res.send(result);
     });
@@ -91,13 +91,21 @@ async function run() {
       const query = { _id: new ObjectId(id) }
       const options = { upsert: true }
       const updatedArticle = req.body
-      const doc = { $set: { 
-        articleTitle: updatedArticle.articleTitle,
-        details: updatedArticle.details
-       } }
+      const doc = {
+        $set: {
+          articleTitle: updatedArticle.articleTitle,
+          details: updatedArticle.details
+        }
+      }
       const result = await articleCollection.updateOne(query, doc, options);
       res.send(result);
     });
+
+    app.get("/trending_articles", async (req, res) => {
+      const query = { status: "approved", isPremium: false }
+      const result = await articleCollection.find(query).sort({ articleView: -1 }).toArray();
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
