@@ -155,6 +155,21 @@ async function run() {
       res.send(result)
     });
 
+    app.patch("/article/decline/:id", async (req, res) => {
+      const id = req.params.id;
+      const declineReason = req.body
+      
+      const query = { _id: new ObjectId(id) };
+      const doc = {
+        $set: {
+          status: "declined",
+          reason: declineReason.reason
+        }
+      }
+      const result = await articleCollection.updateOne(query, doc)
+      res.send(result)
+    });
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
