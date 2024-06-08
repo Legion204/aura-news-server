@@ -45,8 +45,26 @@ async function run() {
       }
       const result = await userCollection.insertOne(user);
       res.send(result);
-    })
+    });
 
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const doc = {
+        $set: {
+          role: "admin"
+        }
+      }
+      const result = await userCollection.updateOne(query, doc)
+      res.send(result)
+    });
+
+    // article related api
     app.post("/articles", async (req, res) => {
       const data = req.body
       const result = await articleCollection.insertOne(data);
