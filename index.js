@@ -123,7 +123,37 @@ async function run() {
       const query = { status: "approved", isPremium: false }
       const result = await articleCollection.find(query).sort({ articleView: -1 }).toArray();
       res.send(result);
-    })
+    });
+
+    // api for admin
+    app.get("/articles/admin", async (req, res) => {
+      const result = await articleCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.patch("/article/approve/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const doc = {
+        $set: {
+          status: "approved"
+        }
+      }
+      const result = await articleCollection.updateOne(query, doc)
+      res.send(result)
+    });
+
+    app.patch("/article/premium/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const doc = {
+        $set: {
+          isPremium: true
+        }
+      }
+      const result = await articleCollection.updateOne(query, doc)
+      res.send(result)
+    });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
