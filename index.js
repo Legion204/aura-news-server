@@ -32,6 +32,7 @@ async function run() {
     // database collection
     const articleCollection = client.db("newsDB").collection("articles");
     const userCollection = client.db("newsDB").collection("users");
+    const publicationCollection = client.db("newsDB").collection("publications");
 
     // user related api
     app.post('/users', async (req, res) => {
@@ -158,7 +159,7 @@ async function run() {
     app.patch("/article/decline/:id", async (req, res) => {
       const id = req.params.id;
       const declineReason = req.body
-      
+
       const query = { _id: new ObjectId(id) };
       const doc = {
         $set: {
@@ -167,6 +168,17 @@ async function run() {
         }
       }
       const result = await articleCollection.updateOne(query, doc)
+      res.send(result)
+    });
+
+    app.post("/publications", async (req, res) => {
+      const publication = req.body
+      const result = await publicationCollection.insertOne(publication)
+      res.send(result)
+    });
+
+    app.get("/publications", async (req, res) => {
+      const result = await publicationCollection.find().toArray()
       res.send(result)
     });
 
