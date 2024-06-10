@@ -7,7 +7,15 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://aura-news-d0504.web.app",
+      "https://aura-news-d0504.firebaseapp.com",
+    ]
+  })
+);
 app.use(express.json());
 
 
@@ -86,7 +94,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/users/admin/:id", async (req, res) => {
+    app.patch("/users/admin/:id",  async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const doc = {
@@ -98,7 +106,7 @@ async function run() {
       res.send(result)
     });
 
-    app.get("/users/admin", verifyToken, async (req, res) => {
+    app.get("/users/admin", verifyToken, verifyAdmin, async (req, res) => {
       const email = req.query.email;
       if (email !== req.decoded.email) {
         return res.status(403).send({ message: "unauthorized access" })
@@ -174,7 +182,7 @@ async function run() {
     });
 
     // api for admin
-    app.get("/articles/admin", verifyToken, async (req, res) => {
+    app.get("/articles/admin", verifyToken, verifyAdmin, async (req, res) => {
       const result = await articleCollection.find().toArray();
       res.send(result);
     });
@@ -224,7 +232,7 @@ async function run() {
       res.send(result)
     });
 
-    app.get("/publications", verifyToken, async (req, res) => {
+    app.get("/publications", async (req, res) => {
       const result = await publicationCollection.find().toArray()
       res.send(result)
     });
